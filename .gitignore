@@ -1,0 +1,13 @@
+node_modules/
+.DS_Store
+.next/
+.env*
+!.env.example
+*.tsbuildinfo
+coverage/
+.test-results/
+
+!.env.staging.example
+!.env.production.example
+
+.work/
