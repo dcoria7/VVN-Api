@@ -21,6 +21,8 @@ export function validateSave(body:Record<string,unknown>,venueId:string,storageB
  for(const [key,raw] of Object.entries(values as Record<string,unknown>)) {
   if(!sections[section].includes(key)) fail('Este campo solo puede cambiarlo el administrador.');
   let value=typeof raw==='string'?raw.trim():raw;
+  if(section==='menu'&&key==='category'&&(value===null||value===''))value='General';
+  if(section==='info'&&key==='description'&&value===null)value='';
   const structured=['tags','opening_hours','lat','lng','price','duration','order','is_available','is_active','is_ambulatory','is_closed_door'];
   if(!structured.includes(key)&&value!==null&&typeof value!=='string')fail('Escribe un texto válido.');
   if(value!=null && typeof value==='string' && value.length>(key==='daily_text'?1000:5000)) fail('El texto es demasiado largo.');

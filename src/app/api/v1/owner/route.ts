@@ -31,6 +31,12 @@ export async function POST(req:Request) {
   if(op!=='save')return apiError('invalid',400);
   const access=await ownerRpc('authorize',auth);if(access.error)return ownerResponse(req,access);
   const clean=validateSave(body,String(access.venue_id),process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/\/$/,''));
+  if(clean.section==='promotions'&&!clean.delete){
+   const current=await ownerRpc('read',auth);if(current.error)return ownerResponse(req,current);
+   const previous=(current.promotions as Record<string,unknown>[]).find(item=>item.id===clean.item_id)??{};
+   const dates={...previous,...clean.values};
+   if(dates.starts_at&&dates.ends_at&&Date.parse(String(dates.ends_at))<=Date.parse(String(dates.starts_at)))return apiError('invalid',400,'El fin debe ser posterior al inicio.');
+  }
   try{await verifyOwnerMedia(clean.values as Record<string,unknown>,String(access.venue_id))}catch{return apiError('invalid',400,'El archivo no está disponible o no pertenece a este negocio. Vuelve a seleccionarlo.')}
   const canonical=JSON.stringify([auth.session_hash,clean.revision,clean.section,clean.item_id??null,clean.delete??false,Object.fromEntries(Object.entries(clean.values as Record<string,unknown>).sort(([a],[b])=>a.localeCompare(b)))]);
   const result=await ownerRpc('save',{...clean,...auth,request_hash:hashSecret(canonical)});

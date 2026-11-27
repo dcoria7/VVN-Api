@@ -43,3 +43,12 @@ Si un swimlane no tiene contenido público vigente, devolver `visible:false` y
 `items:[]`; el consumidor omite la sección completa, sin título ni placeholder.
 Leer un listado no genera impresiones. Las aperturas atribuidas no reemplazan ni
 duplican el contador normal de vistas de negocio.
+
+## Propietarios
+
+Consultar specs/OWNER-ACCESS.md. /owner y /owner/media son privados y siempre
+no-store. Mantener las credenciales fuera de DTOs públicos y no usar el visitante
+como autorización. Solo Pro, un venue por instalación, revocación antes de cambio
+de teléfono y nuevo QR tras vencimiento/renovación. El admin conserva plan,
+pagos y asignación de plaza/fraccionamiento. Respetar la ruta Storage
+{brand}/owners/{venue}/{uuid} y los buckets separados para imágenes/PDF.
