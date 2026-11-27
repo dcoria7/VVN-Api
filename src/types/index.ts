@@ -5,6 +5,7 @@ export type VenueStatus = "open" | "closed";
  *  Guadalajara). Si `close` <= `open` se interpreta que cruza la medianoche
  *  (ej. abre 18:00, cierra 02:00 del día siguiente). */
 export interface DayHours {
+  intervals?: {open:string;close:string}[];
   closed: boolean;
   open: string;
   close: string;

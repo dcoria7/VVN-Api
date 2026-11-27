@@ -21,6 +21,10 @@ export const TRACK_EVENTS = [
   "rating_submit", // calificación de un negocio con estrellas (meta.stars: 1-5), solo VVN
   // Eventos exclusivos de las apps nativas (iOS/Android). Llegan por
   // /api/v1/track con meta.platform. No tienen contraparte en la web.
+  "featured_impression", // card editorial visible (meta.placement_id)
+  "featured_open", // apertura desde destacados, adicional a venue_view
+  "sponsored_impression", // campaña visible (meta.campaign_id)
+  "sponsored_click", // tap al destino de la campaña
   "app_open", // arranque de la app
   "push_received", // notificación recibida con la app en primer plano
   "push_open", // la notificación se abrió

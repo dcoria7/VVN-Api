@@ -20,6 +20,7 @@ const tables={
  blog_posts:[{id:id(6),slug:'post-prueba',title:'Post Prueba',body:'@venue:panaderia-prueba | Prueba local',category:'guia',is_active:true,published_at:'2020-01-01T00:00:00Z',created_at:now,updated_at:now}],
  promotions:[{id:id(7),venue_id:v.id,kind:'coupon',title:'Oferta Prueba',description:'Prueba',discount_label:'10%',code:'LOCAL',image_url:null,terms:null,starts_at:null,ends_at:null,is_active:true,created_at:now,updated_at:now}],
  vvn_announcements:[{id:id(8),title:'Aviso',body:'Prueba',is_active:true,created_at:now,updated_at:now}],
+ vvn_featured_venues:[],vvn_sponsored_campaigns:[],
  menu_items:[],services:[],venue_photos:[],venue_ratings:[],device_tokens:[],analytics_events:[],
 };
 // La otra marca va primero y reutiliza slugs/nombres; una consulta sin ámbito

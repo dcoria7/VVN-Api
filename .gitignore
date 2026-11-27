@@ -11,3 +11,4 @@ coverage/
 !.env.production.example
 
 .work/
+supabase/.temp/

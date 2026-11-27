@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const TABLES = new Set([
   "venues", "fraccionamientos", "plazas", "parques", "menu_items", "services",
+  "vvn_featured_venues", "vvn_sponsored_campaigns",
   "promotions", "venue_photos", "venue_ratings", "blog_posts", "vvn_announcements", "analytics_events",
 ]);
 

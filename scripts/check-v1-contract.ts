@@ -270,6 +270,20 @@ async function main() {
   check("/venues/resolve sin path → 400", (await req("/venues/resolve")).status === 400);
   check("/venues/resolve inexistente → 404", (await req("/venues/resolve?path=no-existe-xyz")).status === 404);
 
+  console.log("\nGET /descubre");
+  const discover = await req("/descubre");
+  checkEnvelope("/descubre", discover);
+  const dd = discover.body.data as Record<string, unknown>;
+  for (const section of ["featured_venues", "sponsored"]) {
+    const lane = dd[section] as Record<string, unknown>;
+    check(`/descubre ${section} tiene items y paginación`, Array.isArray(lane.items) && "next_cursor" in lane && typeof lane.total === "number");
+    check(`/descubre ${section} oculta swimlane vacío`, lane.visible === ((lane.items as unknown[]).length > 0));
+  }
+  const ttl = Number(discover.headers.get("cache-control")?.match(/s-maxage=(\d+)/)?.[1]);
+  check("/descubre caché acotada a 60 s y sin stale", ttl >= 0 && ttl <= 60 && discover.headers.get("cache-control")?.includes("stale-while-revalidate=0") === true);
+  check("/descubre trae plazas públicas", Array.isArray(dd.plazas));
+  await checkEtag304("/descubre", "/descubre");
+
   // ── feed, cupones, blog ───────────────────────────────────────────────────
   console.log("\nGET /feed");
   const feed = await req("/feed?limit=5");

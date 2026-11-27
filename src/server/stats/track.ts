@@ -1,4 +1,5 @@
 import "server-only";
+import { discoverTrackingKey, validDiscoverTracking } from "./discover-tracking";
 import { brandEntityExists, isBrandEntityType } from "@/server/data/brand-entities";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import {
@@ -96,9 +97,15 @@ export async function recordTrackEvent(
   }
   if (fraccId && !await brandEntityExists("fraccionamiento", fraccId)) return { ok: false, reason: "invalid" };
 
+  if (!await validDiscoverTracking(event, entityType, entityId, b.meta)) return { ok: false, reason: "invalid" };
+
   const platform =
     opts.platform ?? (isTrackPlatform(b.platform) ? (b.platform as TrackPlatform) : null);
 
+  const attributionKey = discoverTrackingKey(event);
+  // La clave validada debe sobrevivir al presupuesto de meta, aunque el cliente
+  // haya enviado primero campos adicionales.
+  const rawMeta = attributionKey ? { [attributionKey]: (b.meta as Record<string, unknown>)[attributionKey], ...(b.meta as Record<string, unknown>) } : b.meta;
   const { error } = await createSupabaseAdmin()
     .from("analytics_events")
     .insert({
@@ -106,7 +113,7 @@ export async function recordTrackEvent(
       entity_type: entityType,
       entity_id: entityId,
       fraccionamiento_id: fraccId,
-      meta: sanitizeMeta(b.meta, platform),
+      meta: sanitizeMeta(rawMeta, platform),
     });
 
   if (error) {
