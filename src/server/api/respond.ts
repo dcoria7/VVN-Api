@@ -45,6 +45,7 @@ export const CACHE_PRIVATE = "private, no-store";
 export const CACHE_READ_404 = "public, s-maxage=10, stale-while-revalidate=10";
 
 export type ApiErrorCode =
+  | "unauthorized" | "pro_required" | "already_linked" | "device_linked" | "invitation_unavailable" | "conflict" | "photo_limit"
   | "invalid"
   | "invalid_body"
   | "invalid_event"

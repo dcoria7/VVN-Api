@@ -88,31 +88,14 @@ export function isOpenByHours(hours: OpeningHours, now: Date = new Date()): bool
   if (!Array.isArray(hours) || hours.length === 0) return false;
   const { day, minutes } = nowInGuadalajara(now);
 
-  // Rango de hoy.
-  const today = dayAt(hours, day);
-  if (today && !today.closed) {
-    const o = toMinutes(today.open);
-    const c = toMinutes(today.close);
-    if (o !== null && c !== null) {
-      if (c > o) {
-        // Rango normal dentro del mismo día.
-        if (minutes >= o && minutes < c) return true;
-      } else if (c < o) {
-        // Cruza medianoche: hoy abre desde `o` hasta las 24:00.
-        if (minutes >= o) return true;
-      }
-      // c === o → rango de longitud cero: se considera cerrado.
-    }
+  const ranges=(d:DayHours|null)=>!d||d.closed?[]:d.intervals??[{open:d.open,close:d.close}];
+  for(const r of ranges(dayAt(hours,day))){
+    const o=toMinutes(r.open),c=toMinutes(r.close);
+    if(o!==null&&c!==null&&(c>o&&minutes>=o&&minutes<c||c<o&&minutes>=o))return true;
   }
-
-  // Spillover: el día anterior tenía un rango que cruzaba la medianoche y sigue
-  // vigente en la madrugada de hoy (minutes < close del día anterior).
-  const prevIdx = (day + 6) % 7;
-  const prev = dayAt(hours, prevIdx);
-  if (prev && !prev.closed) {
-    const o = toMinutes(prev.open);
-    const c = toMinutes(prev.close);
-    if (o !== null && c !== null && c < o && minutes < c) return true;
+  for(const r of ranges(dayAt(hours,(day+6)%7))){
+    const o=toMinutes(r.open),c=toMinutes(r.close);
+    if(o!==null&&c!==null&&c<o&&minutes<c)return true;
   }
 
   return false;
@@ -166,6 +149,7 @@ export function parseOpeningHours(raw: unknown): OpeningHours | null {
     if (d && typeof d === "object") {
       out.push({
         closed: Boolean(d.closed),
+        ...(Array.isArray(d.intervals)?{intervals:d.intervals.filter(r=>r && toMinutes(r.open)!==null && toMinutes(r.close)!==null).slice(0,3)}:{}),
         open: typeof d.open === "string" ? d.open : "09:00",
         close: typeof d.close === "string" ? d.close : "18:00",
       });
@@ -193,5 +177,5 @@ export function todayHoursLabel(hours: OpeningHours, now: Date = new Date()): st
   const { day } = nowInGuadalajara(now);
   const d = dayAt(hours, day);
   if (!d || d.closed) return "Cerrado hoy";
-  return `Hoy ${d.open}–${d.close}`;
+  return `Hoy ${d.intervals?.map(r=>`${r.open}–${r.close}`).join(" / ")??`${d.open}–${d.close}`}`;
 }

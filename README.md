@@ -14,6 +14,18 @@ La extracción se hizo desde un snapshot de Git: el proyecto web conserva su ram
 configuración de Vercel ni vínculos al repositorio original. No se desplegó nada ni
 se consultó o modificó la base de producción.
 
+## Estado vigente y memoria de producto
+
+La API general ya es consumida por las apps en
+`https://api.vivevallenorte.com/api/v1`. Las notas de extracción y configuración
+inicial de este README describen aquel momento; no implican que el dominio siga
+pendiente. El endpoint nuevo `/descubre` se validó en staging: eso no confirma
+que su migración y código ya estén publicados en producción.
+
+Al retomar, leer [AGENTS.md](AGENTS.md), [el contrato de Descubre](specs/DISCOVER.md)
+y [el último cierre](specs/ITERATIONS.md). El admin de destacados/patrocinados está
+implementado localmente en la raíz web. Su integración con las apps sigue pendiente.
+
 ## Verificación local sin producción
 
 Requiere Node.js 20.9 o superior. Desde esta carpeta:
@@ -93,7 +105,7 @@ guardar el token. La migración legacy incluida es solo una referencia y **no se
 debe aplicar tal cual**: carece de marca y permisos para el operador. Su adaptación
 se gestiona en el proyecto central. No hay scripts de arranque que apliquen SQL.
 
-## Despliegue futuro
+## Notas históricas del despliegue inicial
 
 La carpeta puede convertirse en un repositorio propio y desplegarse como un
 proyecto nuevo, por ejemplo en la misma cuenta de Vercel. Las variables de entorno
@@ -104,3 +116,23 @@ La URL de la API se configuraría en las apps móviles. Usar un subdominio propi
 requiere cambiar el código de la web. Conservar `/api/v1` dentro del dominio de la
 web requeriría configurar el enrutamiento cuando se decida hacerlo. No se ha
 configurado ninguna de estas opciones.
+
+## Destacados y patrocinados de Descubre
+
+`GET /api/v1/descubre` devuelve dos swimlanes independientes administrados por
+registros persistidos: negocios destacados y campañas patrocinadas (venues,
+inmuebles, encuestas u otros destinos). Si no hay contenido vigente, cada sección
+incluye `visible:false` para ocultarla completamente. `/track` admite los eventos
+de impresión/apertura/clic con atribución a selección o campaña.
+
+Ver [specs/DISCOVER.md](specs/DISCOVER.md) para el contrato, las reglas del admin,
+la migración y el estado de despliegue. Leer [AGENTS.md](AGENTS.md) al retomar y
+actualizar la documentación cuando el usuario indique “travesura terminada”.
+
+## Acceso de propietarios
+
+`GET/POST /api/v1/owner` permite reclamar un QR emitido por el admin y editar
+la ficha Pro vinculada al dispositivo. `POST /api/v1/owner/media` recibe imágenes
+y prepara/confirma subidas directas de PDF. Ver [el contrato](specs/OWNER-API.md)
+y ejecutar `npm run build:staging` seguido de `npm run verify:test-new-endpoints`
+para comprobar HTTP, persistencia y Storage contra `vvn-pruebas`.

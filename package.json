@@ -16,6 +16,7 @@
     "smoke:local": "node scripts/smoke-local.mjs",
     "verify:test-db": "node scripts/verify-test-supabase.mjs",
     "verify:test-api": "node scripts/verify-test-api.mjs",
+    "verify:test-new-endpoints": "node scripts/verify-test-new-endpoints.mjs",
     "postbuild": "node scripts/clean-standalone-env.mjs",
     "dev:staging": "node scripts/run-environment.mjs staging dev",
     "build:staging": "node scripts/run-environment.mjs staging build",
@@ -30,14 +31,15 @@
     "@upstash/redis": "1.38.0",
     "next": "16.2.1",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "sharp": "0.34.5"
   },
   "devDependencies": {
     "@types/node": "20.19.37",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "typescript": "5.9.3",
     "tsx": "4.21.0",
+    "typescript": "5.9.3",
     "vitest": "3.2.7"
   }
 }

@@ -3,7 +3,10 @@
 Contrato de la API pública que consumen las apps nativas (iOS y Android). Esto es
 lo que necesitas leer para escribir el cliente; no hace falta leer el Next.js.
 
-**Base de esta copia independiente:** `http://127.0.0.1:3123/api/v1` en desarrollo. La URL pública se definirá al desplegar; esta carpeta todavía no está publicada.
+**Base de producción:** `https://api.vivevallenorte.com/api/v1`.
+Desarrollo/staging local: `http://127.0.0.1:3123/api/v1`. Las ampliaciones de
+Descubre y propietarios están verificadas en staging; su disponibilidad en
+producción requiere desplegar el código y aplicar sus migraciones.
 
 Todo lo de aquí es **solo Vive Valle Norte**. ClickLocal general, Ocasión y la
 publicidad recomendada no salen por esta API, y tampoco nada del admin.
@@ -32,6 +35,8 @@ en `/track`, referencias ajenas o tipos de entidad no admitidos dan `400 invalid
   [stats/promotions](#post-statspromotions) · [ratings](#get-ratings) ·
   [track](#post-track) · [devices](#post-devices)
 - [El tipo Venue](#el-tipo-venue)
+- [Descubre y atribución](DISCOVER.md)
+- [Acceso privado de propietarios y archivos](OWNER-API.md)
 - [Contenido que va compilado en la app](#contenido-que-va-compilado-en-la-app)
 - [Cómo verificar](#cómo-verificar)
 
@@ -47,8 +52,10 @@ que el sitio web.
 **No hay CORS.** Una app nativa no lo necesita y abrirlo "por si acaso" solo
 agregaría superficie.
 
-**No hay autenticación de usuario.** No existen cuentas. El dueño de un negocio
-edita su ficha por Telegram, y eso no cambia.
+**Las lecturas públicas no requieren cuenta.** El acceso privado de propietarios
+es una excepción: `/owner` y `/owner/media` usan secretos de sesión e instalación
+vinculados mediante QR. Ver [su contrato](OWNER-API.md). Las credenciales de
+Supabase permanecen en el servidor.
 
 Toda respuesta lleva `X-Api-Version: 1`.
 
@@ -136,6 +143,10 @@ crudos y tú recalculas, idealmente cada minuto:
   `{ closed, open: "HH:mm", close: "HH:mm" }`. **Siempre en hora de Guadalajara
   (`America/Mexico_City`)**, no en la del dispositivo. Si `close <= open`, el rango
   cruza la medianoche (abre 18:00, cierra 02:00 del día siguiente).
+  Un día también puede incluir `intervals:[{open,close},…]` (de uno a tres turnos).
+  Si existe, calcular la apertura sobre esos intervalos; usar `open`/`close` como
+  respaldo cuando `intervals` no esté presente. Conservar el spillover del día
+  anterior para cualquier intervalo que cruce medianoche.
 - `status`: el estado manual. **Es el valor efectivo solo si `opening_hours` es
   `null`** (negocios sin horario configurado, que el dueño prende y apaga por bot).
 - `status_override` + `status_override_until`: override temporal del dueño. Mientras
